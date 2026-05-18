@@ -183,7 +183,7 @@ export async function getReportData(year: string) {
 
   // Flatten for CSV export
   const rows = (data ?? []).flatMap(sheet => {
-    const employee = sheet.employee as Record<string, unknown>
+    const employee = sheet.employee as unknown as Record<string, unknown>
     const manager = (employee?.manager as Record<string, unknown>)?.full_name ?? '—'
 
     return (sheet.goals as Record<string, unknown>[]).map(goal => ({
