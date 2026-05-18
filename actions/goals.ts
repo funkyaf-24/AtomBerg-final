@@ -132,7 +132,7 @@ export async function updateGoal(
     .eq('id', goalId)
     .single()
 
-  const sheetStatus = (goal?.goal_sheets as { status: string } | null)?.status
+  const sheetStatus = (goal?.goal_sheets as unknown as { status: string } | null)?.status
   if (!['draft', 'rework'].includes(sheetStatus ?? '')) {
     return { success: false, error: 'Goal sheet is not in an editable state' }
   }
