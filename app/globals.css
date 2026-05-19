@@ -3,22 +3,27 @@
 @tailwind utilities;
 
 @layer base {
+  /* CSS variables (kept for future use if you later add custom Tailwind theme colors) */
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
   }
 
+  /* Apply a default light gray border to all elements */
   * {
-    @apply border-border;
+    @apply border-gray-200;
   }
 
+  /* Use standard Tailwind classes instead of custom classes
+     (bg-background and text-foreground were causing build errors) */
   body {
-    @apply bg-background text-foreground;
+    @apply bg-white text-gray-900;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
 @layer utilities {
+  /* Thin scrollbar utility */
   .scrollbar-thin {
     scrollbar-width: thin;
   }
