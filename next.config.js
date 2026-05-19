@@ -2,7 +2,13 @@
 const nextConfig = {
   experimental: {
     serverActions: {
-      allowedOrigins: ['localhost:3000', process.env.NEXT_PUBLIC_APP_URL ?? ''],
+      // Allow localhost and any Vercel deployment URL.
+      // NEXT_PUBLIC_APP_URL should be set in Vercel env vars to your production domain.
+      allowedOrigins: [
+        'localhost:3000',
+        '*.vercel.app',
+        process.env.NEXT_PUBLIC_APP_URL ?? '',
+      ].filter(Boolean),
     },
   },
 

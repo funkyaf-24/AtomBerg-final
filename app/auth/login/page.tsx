@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { login } from '@/actions/auth'
 import { loginSchema } from '@/lib/validations'
 import { Target, Eye, EyeOff, Loader2 } from 'lucide-react'
 
@@ -25,21 +25,25 @@ export default function LoginPage() {
     }
 
     setLoading(true)
-    const supabase = createClient()
+    try {
+      const result = await login(parsed.data.email, parsed.data.password)
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email: parsed.data.email,
-      password: parsed.data.password,
-    })
+      if (!result.success) {
+        setError(result.error)
+        return
+      }
 
-    if (authError) {
-      setError('Invalid email or password. Please try again.')
+      // Server action succeeded and returned the role-based redirect path.
+      // router.push triggers a client-side navigation; router.refresh ensures
+      // the Next.js cache is invalidated so the middleware sees the new cookie.
+      router.push(result.redirectTo)
+      router.refresh()
+    } catch (err) {
+      console.error('Login error:', err)
+      setError('Something went wrong. Please try again.')
+    } finally {
       setLoading(false)
-      return
     }
-
-    router.push('/dashboard')
-    router.refresh()
   }
 
   return (
@@ -71,6 +75,7 @@ export default function LoginPage() {
                 className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                 placeholder="you@company.com"
                 required
+                autoComplete="email"
               />
             </div>
 
@@ -87,6 +92,7 @@ export default function LoginPage() {
                   className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition pr-10"
                   placeholder="••••••••"
                   required
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"
@@ -127,6 +133,7 @@ export default function LoginPage() {
               ].map(cred => (
                 <button
                   key={cred.role}
+                  type="button"
                   onClick={() => { setEmail(cred.email); setPassword('Demo@1234') }}
                   className="text-center p-2 border border-indigo-100 rounded-lg hover:bg-indigo-50 transition cursor-pointer"
                 >
